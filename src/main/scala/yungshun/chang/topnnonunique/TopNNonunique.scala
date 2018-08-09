@@ -39,5 +39,24 @@ object TopNNonunique {
     })
 
     val alltop10 = partitions.collect()
+    val finaltop10 = SortedMap.empty[Int, String].++:(alltop10)
+    val resultUsingMapPartition = finaltop10.takeRight(N.value)
+
+    resultUsingMapPartition.foreach {
+      case (k, v) => println(s"$k \t ${v.mkString(",")}")
+    }
+
+    /*
+    val createCombiner = (v: Int) => v
+    val mergeValue = (a: Int, b: Int) => (a + b)
+    val moreConciseApproach = kv.combineByKey(createCombiner, mergeValue, mergeValue).map(_.swap)
+      .groupByKey().sortByKey(false).take(N.value)
+
+    moreConciseApproach.foreach {
+      case (k, v) => println(s"$k \t ${v.mkString(",")}")
+    }
+    */
+
+    sc.stop()
   }
 }
