@@ -73,6 +73,18 @@ resultUsingMapPartition.foreach {
 ```
 Because we already performed `tuple.swap`, the result is in `<Int> <String>` format. And we set `val N = sc.broadcast(2)` in the beginning, we get the top 2 list like the example finally.
 
+More concise code.
+```scala
+val createCombiner = (v: Int) => v
+val mergeValue = (a: Int, b: Int) => (a + b)
+val moreConciseApproach = kv.combineByKey(createCombiner, mergeValue, mergeValue).map(_.swap)
+  .groupByKey().sortByKey(false).take(N.value)
+
+moreConciseApproach.foreach {
+  case (k, v) => println(s"$k \t ${v.mkString(",")}")
+}
+```
+
 ## Spark SQL
 
 It's not recommended processing your data in this low-level approach any more. We had better move to Spark SQL.
